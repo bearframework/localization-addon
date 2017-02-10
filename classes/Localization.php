@@ -25,12 +25,13 @@ class Localization
         return $this->locale;
     }
 
-    public function addDictionary(string $locale, $callbackOrArray): void
+    public function addDictionary(string $locale, $callbackOrArray): BearFramework\Localization
     {
         if (!isset($this->dictionaries[$locale])) {
             $this->dictionaries[$locale] = [];
         }
         $this->dictionaries[$locale][] = $callbackOrArray;
+        return $this;
     }
 
     public function getText($id): string
