@@ -25,7 +25,7 @@ class Localization
         return $this->locale;
     }
 
-    public function addDictionary(string $locale, $callbackOrArray): BearFramework\Localization
+    public function addDictionary(string $locale, $callbackOrArray): \BearFramework\Localization
     {
         if (!isset($this->dictionaries[$locale])) {
             $this->dictionaries[$locale] = [];
