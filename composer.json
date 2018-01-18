@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": ">=7.1",
-        "bearframework/bearframework": "dev-master|0.10.*@beta"
+        "bearframework/bearframework": "dev-master|0.10.*@beta|0.10.*"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8"
