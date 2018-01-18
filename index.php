@@ -18,7 +18,7 @@ $app->shortcuts->add('localization', function() {
     return new \BearFramework\Localization();
 });
 
-function __($id)
+function __(string $id): ?string
 {
     $app = App::get();
     return $app->localization->getText($id);
