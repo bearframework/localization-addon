@@ -134,7 +134,9 @@ class Localization
             $month = __('bearframework-localization-addon.month_' . date('n', $timestamp));
             $year = date('Y', $timestamp);
             $showYear = $hasDateOption || ($hasDateAutoYearOption && $year !== date('Y', time()));
-            if ($this->locale === 'bg' || $this->locale === 'ru') {
+            if ($this->locale === 'bg') {
+                $result[] = $day . ' ' . $month . ($showYear ? ' ' . $year . 'г.' : '');
+            } elseif ($this->locale === 'ru') {
                 $result[] = $day . ' ' . $month . ($showYear ? ' ' . $year : '');
             } else {
                 $result[] = $month . ' ' . $day . ($showYear ? ', ' . $year : '');
