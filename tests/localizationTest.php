@@ -37,6 +37,8 @@ class localizationTest extends BearFrameworkAddonTestCase
         $this->assertTrue($formatedDate === 'April 5, ' . date('Y'));
         $formatedDate = $app->localization->formatDate($date, ['dateAutoYear']);
         $this->assertTrue($formatedDate === 'April 5');
+        $formatedDate = $app->localization->formatDate($date);
+        $this->assertTrue($formatedDate === 'April 5');
         $formatedDate = $app->localization->formatDate($date, ['time']);
         $this->assertTrue($formatedDate === '1:02');
 

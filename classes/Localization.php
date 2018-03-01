@@ -97,7 +97,7 @@ class Localization
      * @param array $options The elements that the text representation of the date must contain. Available values: date, dateAutoYear, time, timeAgo.
      * @todo Additional options: timeAutoDate, day, month, year, autoYear, hours, minutes, seconds.
      */
-    public function formatDate($date, array $options): string
+    public function formatDate($date, array $options = []): string
     {
         if (is_int($date) || is_numeric($date)) {
             $timestamp = (int) $date;
@@ -105,6 +105,10 @@ class Localization
             $timestamp = $date->getTimestamp();
         } else {
             $timestamp = (new \DateTime($date))->getTimestamp();
+        }
+
+        if (empty($options)) {
+            $options = ['dateAutoYear'];
         }
 
         $result = [];
