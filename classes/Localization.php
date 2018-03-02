@@ -18,6 +18,7 @@ class Localization
 {
 
     private $locale = 'en';
+    private $backupLocale = 'en';
     private $dictionaries = [];
     private $defaultLocales = ['bg' => 0, 'en' => 0, 'ru' => 0];
 
@@ -37,6 +38,24 @@ class Localization
     public function getLocale(): string
     {
         return $this->locale;
+    }
+
+    /**
+     * Sets a new backup locale code.
+     * @param string $locale The new backup locale code.
+     */
+    public function setBackupLocale(string $locale): void
+    {
+        $this->backupLocale = $locale;
+    }
+
+    /**
+     * Returns the current backup locale code.
+     * @return string The current backup locale code.
+     */
+    public function getBackupLocale(): string
+    {
+        return $this->backupLocale;
     }
 
     /**
@@ -61,34 +80,41 @@ class Localization
      */
     public function getText(string $id): ?string
     {
-        if (isset($this->defaultLocales[$this->locale]) && $this->defaultLocales[$this->locale] === 0) {
-            $app = App::get();
-            $context = $app->context->get(__FILE__);
-            $this->defaultLocales[$this->locale] = 1;
-            $filename = $context->dir . '/locales/' . $this->locale . '.php';
-            if (is_file($filename)) {
-                $data = include $filename;
-                if (is_array($data)) {
-                    $this->addDictionary($this->locale, $data);
+        $getText = function(string $id, string $locale) {
+            if (isset($this->defaultLocales[$locale]) && $this->defaultLocales[$locale] === 0) {
+                $app = App::get();
+                $context = $app->context->get(__FILE__);
+                $this->defaultLocales[$locale] = 1;
+                $filename = $context->dir . '/locales/' . $locale . '.php';
+                if (is_file($filename)) {
+                    $data = include $filename;
+                    if (is_array($data)) {
+                        $this->addDictionary($locale, $data);
+                    }
                 }
             }
-        }
-        if (isset($this->dictionaries[$this->locale])) {
-            foreach ($this->dictionaries[$this->locale] as $i => $dictionary) {
-                if (is_callable($dictionary)) {
-                    $dictionary = call_user_func($dictionary);
-                    $this->dictionaries[$this->locale][$i] = $dictionary;
-                }
-                if (is_array($dictionary)) {
-                    foreach ($dictionary as $_id => $text) {
-                        if ($id === $_id) {
-                            return $text;
+            if (isset($this->dictionaries[$locale])) {
+                foreach ($this->dictionaries[$locale] as $i => $dictionary) {
+                    if (is_callable($dictionary)) {
+                        $dictionary = call_user_func($dictionary);
+                        $this->dictionaries[$locale][$i] = $dictionary;
+                    }
+                    if (is_array($dictionary)) {
+                        foreach ($dictionary as $_id => $text) {
+                            if ($id === $_id) {
+                                return (string) $text;
+                            }
                         }
                     }
                 }
             }
+            return null;
+        };
+        $text = $getText($id, $this->locale);
+        if ($text === null || !isset($text[0])) {
+            $text = $getText($id, $this->backupLocale);
         }
-        return null;
+        return $text;
     }
 
     /**

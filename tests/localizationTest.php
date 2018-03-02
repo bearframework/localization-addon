@@ -71,4 +71,22 @@ class localizationTest extends BearFrameworkAddonTestCase
         $this->assertTrue($formatedDate === $app->localization->formatDate($date, ['dateAutoYear']));
     }
 
+    /**
+     * 
+     */
+    public function testBackupLocale()
+    {
+        $app = $this->getApp();
+        $app->localization->setLocale('en');
+        $this->assertTrue($app->localization->getText('bearframework-localization-addon.month_1') === 'January');
+        $this->assertTrue($app->localization->getBackupLocale() === 'en');
+        $this->assertTrue($app->localization->getLocale() === 'en');
+        $app->localization->setLocale('xx');
+        $this->assertTrue($app->localization->getLocale() === 'xx');
+        $this->assertTrue($app->localization->getText('bearframework-localization-addon.month_1') === 'January');
+        $app->localization->setBackupLocale('bg');
+        $this->assertTrue($app->localization->getBackupLocale() === 'bg');
+        $this->assertTrue($app->localization->getText('bearframework-localization-addon.month_1') === 'Януари');
+    }
+
 }
