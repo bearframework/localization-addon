@@ -10,7 +10,7 @@
 /**
  * @runTestsInSeparateProcesses
  */
-class localizationTest extends BearFrameworkAddonTestCase
+class localizationTest extends BearFramework\AddonTests\PHPUnitTestCase
 {
 
     /**
