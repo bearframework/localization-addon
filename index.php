@@ -10,13 +10,15 @@
 use BearFramework\App;
 
 $app = App::get();
-$context = $app->context->get(__FILE__);
+$context = $app->contexts->get(__FILE__);
 
-$context->classes->add('BearFramework\Localization', 'classes/Localization.php');
+$context->classes
+        ->add('BearFramework\Localization', 'classes/Localization.php');
 
-$app->shortcuts->add('localization', function() {
-    return new \BearFramework\Localization();
-});
+$app->shortcuts
+        ->add('localization', function() {
+            return new \BearFramework\Localization();
+        });
 
 function __(string $id): ?string
 {

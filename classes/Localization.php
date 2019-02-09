@@ -17,9 +17,28 @@ use BearFramework\App;
 class Localization
 {
 
+    /**
+     *
+     * @var string 
+     */
     private $locale = 'en';
+
+    /**
+     *
+     * @var string 
+     */
     private $backupLocale = 'en';
+
+    /**
+     *
+     * @var array 
+     */
     private $dictionaries = [];
+
+    /**
+     *
+     * @var array 
+     */
     private $defaultLocales = ['bg' => 0, 'en' => 0, 'ru' => 0];
 
     /**
@@ -83,7 +102,7 @@ class Localization
         $getText = function(string $id, string $locale) {
             if (isset($this->defaultLocales[$locale]) && $this->defaultLocales[$locale] === 0) {
                 $app = App::get();
-                $context = $app->context->get(__FILE__);
+                $context = $app->contexts->get(__FILE__);
                 $this->defaultLocales[$locale] = 1;
                 $filename = $context->dir . '/locales/' . $locale . '.php';
                 if (is_file($filename)) {
