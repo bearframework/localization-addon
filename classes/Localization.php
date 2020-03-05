@@ -102,7 +102,7 @@ class Localization
         $getText = function(string $id, string $locale) {
             if (isset($this->defaultLocales[$locale]) && $this->defaultLocales[$locale] === 0) {
                 $app = App::get();
-                $context = $app->contexts->get(__FILE__);
+                $context = $app->contexts->get(__DIR__);
                 $this->defaultLocales[$locale] = 1;
                 $filename = $context->dir . '/locales/' . $locale . '.php';
                 if (is_file($filename)) {
