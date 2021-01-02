@@ -1,7 +1,11 @@
 {
     "name": "bearframework/localization-addon",
     "description": "Localization addon for Bear Framework",
-    "keywords": ["localization", "addon", "Bear Framework"],
+    "keywords": [
+        "localization",
+        "addon",
+        "Bear Framework"
+    ],
     "homepage": "https://github.com/bearframework/localization-addon",
     "license": "MIT",
     "authors": [
@@ -16,10 +20,11 @@
         "bearframework/bearframework": "1.*"
     },
     "require-dev": {
-        "bearframework/addon-tests": "0.3.*",
-        "phpunit/phpunit": "7.*"
+        "bearframework/addon-tests": "1.*"
     },
     "autoload": {
-        "files": ["autoload.php"]
+        "files": [
+            "autoload.php"
+        ]
     }
 }
