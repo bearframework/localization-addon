@@ -99,7 +99,7 @@ class Localization
      */
     public function getText(string $id): ?string
     {
-        $getText = function(string $id, string $locale) {
+        $getText = function (string $id, string $locale) {
             if (isset($this->defaultLocales[$locale]) && $this->defaultLocales[$locale] === 0) {
                 $app = App::get();
                 $context = $app->contexts->get(__DIR__);
@@ -193,10 +193,13 @@ class Localization
         }
 
         if ($hasTimeOption) {
-            $result[] = date('G:i', $timestamp);
+            if ($this->locale === 'bg') {
+                $result[] = date('G:i', $timestamp) . 'ч.';
+            } else {
+                $result[] = date('G:i', $timestamp);
+            }
         }
 
         return implode(' ', $result);
     }
-
 }
