@@ -13,12 +13,12 @@ $app = App::get();
 $context = $app->contexts->get(__DIR__);
 
 $context->classes
-        ->add('BearFramework\Localization', 'classes/Localization.php');
+    ->add('BearFramework\Localization', 'classes/Localization.php');
 
 $app->shortcuts
-        ->add('localization', function() {
-            return new \BearFramework\Localization();
-        });
+    ->add('localization', function () {
+        return new \BearFramework\Localization();
+    });
 
 function __(string $id): ?string
 {
