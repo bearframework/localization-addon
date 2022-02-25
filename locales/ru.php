@@ -14,7 +14,7 @@ return [
     'bearframework-localization-addon.month_11' => 'Ноябрь',
     'bearframework-localization-addon.month_12' => 'Декабрь',
     'bearframework-localization-addon.moment_ago' => 'менее чем минуту назад',
-    'bearframework-localization-addon.minutes_ago' => '% минут назад',
+    'bearframework-localization-addon.minutes_ago' => '%s минут назад',
     'bearframework-localization-addon.minute_ago' => 'минуту назад',
     'bearframework-localization-addon.hours_ago' => '%s часов назад',
     'bearframework-localization-addon.hour_ago' => 'час назад',
