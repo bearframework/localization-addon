@@ -138,7 +138,7 @@ class Localization
 
     /**
      * Returns a text representation of the date provided that contains the elements listed.
-     * @param int|DateTime $date The date to format.
+     * @param int|DateTime|string $date The date to format.
      * @param array $options The elements that the text representation of the date must contain. Available values: date, dateAutoYear, time, timeAgo.
      * @todo Additional options: timeAutoDate, day, month, year, autoYear, hours, minutes, seconds.
      */
@@ -149,7 +149,7 @@ class Localization
         } elseif ($date instanceof \DateTime) {
             $timestamp = $date->getTimestamp();
         } else {
-            $timestamp = (new \DateTime($date))->getTimestamp();
+            $timestamp = (new \DateTime((string)$date))->getTimestamp();
         }
 
         if (empty($options)) {
@@ -158,48 +158,109 @@ class Localization
 
         $result = [];
 
-        $hasDateOption = array_search('date', $options) !== false;
-        $hasDateAutoYearOption = array_search('dateAutoYear', $options) !== false;
-        $hasTimeOption = array_search('time', $options) !== false;
-        $hasTimeAgoOption = array_search('timeAgo', $options) !== false;
+        $hasOption = function ($name) use ($options) {
+            return array_search($name, $options) !== false;
+        };
+
+        $hasDateOption = $hasOption('date');
+        $hasDateAutoYearOption = $hasOption('dateAutoYear');
+        $hasMonthOption = $hasOption('month');
+        $hasYearOption = $hasOption('year');
+        $hasMonthDayOption = $hasOption('monthDay');
+        $hasWeekDayOption = $hasOption('weekDay');
+        $hasWeekDayShortOption = $hasOption('weekDayShort');
+        $hasTimeOption = $hasOption('time');
+        $hasTimeAgoOption = $hasOption('timeAgo');
 
         if ($hasTimeAgoOption) {
             $secondsAgo = time() - $timestamp;
             if ($secondsAgo < 60) {
-                $result[] = __('bearframework-localization-addon.moment_ago');
+                $result['timeAgo'] = __('bearframework-localization-addon.moment_ago');
             } elseif ($secondsAgo < 60 * 60) {
-                $minutes = floor($secondsAgo / 60);
-                $result[] = $minutes > 1 ? sprintf(__('bearframework-localization-addon.minutes_ago'), $minutes) : __('bearframework-localization-addon.minute_ago');
+                $minutesAgo = floor($secondsAgo / 60);
+                $result['timeAgo'] = $minutesAgo > 1 ? sprintf(__('bearframework-localization-addon.minutes_ago'), $minutesAgo) : __('bearframework-localization-addon.minute_ago');
             } elseif ($secondsAgo < 60 * 60 * 24) {
-                $hours = floor($secondsAgo / (60 * 60));
-                $result[] = $hours > 1 ? sprintf(__('bearframework-localization-addon.hours_ago'), $hours) : __('bearframework-localization-addon.hour_ago');
+                $hoursAgo = floor($secondsAgo / (60 * 60));
+                $result['timeAgo'] = $hoursAgo > 1 ? sprintf(__('bearframework-localization-addon.hours_ago'), $hoursAgo) : __('bearframework-localization-addon.hour_ago');
             } else {
                 $hasDateAutoYearOption = true;
             }
         }
 
-        if ($hasDateOption || $hasDateAutoYearOption) {
-            $day = date('j', $timestamp);
-            $month = __('bearframework-localization-addon.month_' . date('n', $timestamp));
+        if ($hasDateOption || $hasDateAutoYearOption || $hasMonthDayOption) {
+            $result['monthDay'] = date('j', $timestamp);
+        }
+
+        if ($hasDateOption || $hasDateAutoYearOption || $hasMonthOption) {
+            $result['month'] = __('bearframework-localization-addon.month_' . date('n', $timestamp));
+        }
+
+        if ($hasDateOption || $hasDateAutoYearOption || $hasYearOption) {
             $year = date('Y', $timestamp);
-            $showYear = $hasDateOption || ($hasDateAutoYearOption && $year !== date('Y', time()));
-            if ($this->locale === 'bg') {
-                $result[] = $day . ' ' . $month . ($showYear ? ' ' . $year . 'г.' : '');
-            } elseif ($this->locale === 'ru') {
-                $result[] = $day . ' ' . $month . ($showYear ? ' ' . $year : '');
+            if ($hasDateAutoYearOption && $year === date('Y', time())) {
+                // skip
             } else {
-                $result[] = $month . ' ' . $day . ($showYear ? ', ' . $year : '');
+                if ($this->locale === 'bg') {
+                    $year .= 'г.';
+                }
+                $result['year'] = $year;
             }
+        }
+
+        if ($hasWeekDayOption) {
+            $result['weekDay'] = __('bearframework-localization-addon.day_' . date('N', $timestamp));
+        }
+
+        if ($hasWeekDayShortOption) {
+            $result['weekDay'] = __('bearframework-localization-addon.day_' . date('N', $timestamp) . '_short');
         }
 
         if ($hasTimeOption) {
             if ($this->locale === 'bg') {
-                $result[] = date('G:i', $timestamp) . 'ч.';
+                $result['time'] = date('G:i', $timestamp) . 'ч.';
             } else {
-                $result[] = date('G:i', $timestamp);
+                $result['time'] = date('G:i', $timestamp);
             }
         }
 
-        return implode(' ', $result);
+        $templates = [];
+        if (array_search($this->locale, ['bg', 'ru']) !== false) {
+            $templates[] = '{weekDay}, {monthDay} {month} {year}';
+            $templates[] = '{weekDay}, {monthDay} {month}';
+            $templates[] = '{monthDay} {month} {year}';
+            $templates[] = '{monthDay} {month}';
+        } else {
+            $templates[] = '{weekDay}, {month} {monthDay}, {year}';
+            $templates[] = '{weekDay}, {month} {monthDay}';
+            $templates[] = '{month} {monthDay}, {year}';
+            $templates[] = '{month} {monthDay}';
+        }
+
+        $replacedTemplate = '';
+        $resultKeys = array_keys($result);
+        foreach ($templates as $template) {
+            $matches = null;
+            preg_match_all('/\{(.*?)\}/', $template, $matches);
+            if (is_array($matches) && isset($matches[1])) {
+                $keys = $matches[1];
+                if (sizeof(array_intersect($resultKeys, $keys)) === sizeof($keys)) {
+                    $replacedTemplate = $template;
+                    foreach ($keys as $key) {
+                        $replacedTemplate = str_replace('{' . $key . '}', $result[$key], $replacedTemplate);
+                        unset($result[$key]);
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (!empty($result)) {
+            if ($replacedTemplate !== '') {
+                $replacedTemplate .= ',';
+            }
+            $replacedTemplate .= ' ' . implode(', ', $result);
+        }
+
+        return $replacedTemplate;
     }
 }
