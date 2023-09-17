@@ -263,4 +263,64 @@ class Localization
 
         return $replacedTemplate;
     }
+
+    /**
+     * 
+     * @return string
+     */
+    public function getFormatDateJsFunction(): string
+    {
+        $texts = [
+            'bearframework-localization-addon.month_1',
+            'bearframework-localization-addon.month_2',
+            'bearframework-localization-addon.month_3',
+            'bearframework-localization-addon.month_4',
+            'bearframework-localization-addon.month_5',
+            'bearframework-localization-addon.month_6',
+            'bearframework-localization-addon.month_7',
+            'bearframework-localization-addon.month_8',
+            'bearframework-localization-addon.month_9',
+            'bearframework-localization-addon.month_10',
+            'bearframework-localization-addon.month_11',
+            'bearframework-localization-addon.month_12',
+            'bearframework-localization-addon.day_1',
+            'bearframework-localization-addon.day_2',
+            'bearframework-localization-addon.day_3',
+            'bearframework-localization-addon.day_4',
+            'bearframework-localization-addon.day_5',
+            'bearframework-localization-addon.day_6',
+            'bearframework-localization-addon.day_7',
+            'bearframework-localization-addon.day_1_short',
+            'bearframework-localization-addon.day_2_short',
+            'bearframework-localization-addon.day_3_short',
+            'bearframework-localization-addon.day_4_short',
+            'bearframework-localization-addon.day_5_short',
+            'bearframework-localization-addon.day_6_short',
+            'bearframework-localization-addon.day_7_short',
+            'bearframework-localization-addon.moment_ago',
+            'bearframework-localization-addon.minutes_ago',
+            'bearframework-localization-addon.minute_ago',
+            'bearframework-localization-addon.hours_ago',
+            'bearframework-localization-addon.hour_ago',
+        ];
+        $js = include __DIR__ . '/../assets/formatDate.min.js.php';
+        //$js = file_get_contents(__DIR__ . '/../dev/formatDate.js');
+        return trim(str_replace(['var f = ', 'var f=', 'GET_TEXT_FUNCTION_TO_REPLACE', 'LOCALE_TO_REPLACE'], ['', '', $this->getGetTextJsFunction($texts), json_encode($this->locale)], $js), ';');
+    }
+
+    /**
+     * 
+     * @param array $ids
+     * @return string
+     */
+    public function getGetTextJsFunction(array $ids): string
+    {
+        $texts = [];
+        foreach ($ids as $id) {
+            $texts[$id] = $this->getText($id);
+        }
+        $js = include __DIR__ . '/../assets/getText.min.js.php';
+        //$js = file_get_contents(__DIR__ . '/../dev/getText.js');
+        return trim(str_replace(['var f = ', 'var f=', 'TEXTS_OBJECT_VALUE_TO_REPLACE'], ['', '', json_encode($texts)], $js), ';');
+    }
 }
