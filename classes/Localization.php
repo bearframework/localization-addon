@@ -264,6 +264,97 @@ class Localization
         return $replacedTemplate;
     }
 
+
+    /**
+     * 
+     * @param int|string $value
+     * @param array $options Available values: auto, bytes, gb, mb, kb, b, autoRound, round
+     * @return string
+     */
+    public function formatBytes($value, array $options = []): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        if (empty($options)) {
+            $options = ['auto', 'autoRound'];
+        }
+
+        $bytes = null;
+        if (is_int($value) || is_numeric($value)) {
+            $bytes = (int)$value;
+        } else {
+            $value = str_replace(',', '.', $value);
+            $suffix = strtolower(substr($value, -2));
+            $number = null;
+            if (in_array($suffix, ['tb', 'gb', 'mb', 'kb'])) {
+                $number = (float) substr($value, 0, -2);
+            } else {
+                $suffix = strtolower(substr($value, -1));
+                if (in_array($suffix, ['t', 'g', 'm', 'k'])) {
+                    $number = (float) substr($value, 0, -1);
+                }
+            }
+            if ($number !== null) {
+                switch ($suffix) {
+                    case 'tb':
+                    case 't':
+                        $bytes = $number * 1024 * 1024 * 1024 * 1024;
+                        break;
+                    case 'gb':
+                    case 'g':
+                        $bytes = $number * 1024 * 1024 * 1024;
+                        break;
+                    case 'mb':
+                    case 'm':
+                        $bytes = $number * 1024 * 1024;
+                        break;
+                    case 'kb':
+                    case 'k':
+                        $bytes = $number * 1024;
+                        break;
+                }
+            }
+        }
+
+        $hasOption = function ($name) use ($options) {
+            return array_search($name, $options) !== false;
+        };
+
+        if ($hasOption('bytes')) {
+            return $bytes;
+        }
+
+        $hasAutoRound = $hasOption('autoRound');
+
+        $applyAutoRound = function ($result) use ($hasAutoRound): string {
+            if ($hasAutoRound) {
+                return rtrim(rtrim($result, '0'), '.');
+            }
+            return $result;
+        };
+
+        $round = $hasOption('round');
+
+        if (($hasOption('auto') && $bytes >= 1073741824) || $hasOption('gb')) {
+            return $applyAutoRound(number_format($bytes / 1073741824, $round ? 0 : 2)) . ' GB';
+        }
+        if (($hasOption('auto') && $bytes >= 1048576) || $hasOption('mb')) {
+            return $applyAutoRound(number_format($bytes / 1048576, $round ? 0 : 2)) . ' MB';
+        }
+        if (($hasOption('auto') && $bytes >= 1024) || $hasOption('kb')) {
+            return $applyAutoRound(number_format($bytes / 1024, $round ? 0 : 2)) . ' KB';
+        }
+        if (($hasOption('auto') && $bytes > 1) || ($hasOption('b') && $bytes > 1)) {
+            return $bytes . ' bytes';
+        }
+        if (($hasOption('auto') && $bytes === 1) || $hasOption('b')) {
+            return $bytes . ' byte';
+        }
+        return '0 bytes';
+    }
+
     /**
      * 
      * @return string
@@ -322,5 +413,16 @@ class Localization
         $js = include __DIR__ . '/../assets/getText.min.js.php';
         //$js = file_get_contents(__DIR__ . '/../dev/getText.js');
         return trim(str_replace(['var f = ', 'var f=', 'TEXTS_OBJECT_VALUE_TO_REPLACE'], ['', '', json_encode($texts)], $js), ';');
+    }
+
+    /**
+     * 
+     * @return string
+     */
+    public function getFormatBytesJsFunction(): string
+    {
+        $js = include __DIR__ . '/../assets/formatBytes.min.js.php';
+        //$js = file_get_contents(__DIR__ . '/../dev/formatBytes.js');
+        return trim(str_replace(['var f = ', 'var f='], ['', ''], $js), ';');
     }
 }
