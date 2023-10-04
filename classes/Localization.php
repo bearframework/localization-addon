@@ -165,10 +165,13 @@ class Localization
         $hasDateOption = $hasOption('date');
         $hasDateAutoYearOption = $hasOption('dateAutoYear');
         $hasMonthOption = $hasOption('month');
+        $hasMonthShortOption = $hasOption('monthShort');
         $hasYearOption = $hasOption('year');
+        $hasAutoYearOption = $hasOption('autoYear');
         $hasMonthDayOption = $hasOption('monthDay');
         $hasWeekDayOption = $hasOption('weekDay');
         $hasWeekDayShortOption = $hasOption('weekDayShort');
+        $hasWeekNumber = $hasOption('weekNumber');
         $hasTimeOption = $hasOption('time');
         $hasTimeAgoOption = $hasOption('timeAgo');
 
@@ -195,9 +198,13 @@ class Localization
             $result['month'] = __('bearframework-localization-addon.month_' . date('n', $timestamp));
         }
 
-        if ($hasDateOption || $hasDateAutoYearOption || $hasYearOption) {
+        if ($hasMonthShortOption) {
+            $result['month'] = __('bearframework-localization-addon.month_' . date('n', $timestamp) . '_short');
+        }
+
+        if ($hasDateOption || $hasDateAutoYearOption || $hasYearOption || $hasAutoYearOption) {
             $year = date('Y', $timestamp);
-            if ($hasDateAutoYearOption && $year === date('Y', time())) {
+            if (($hasDateAutoYearOption || $hasAutoYearOption) && $year === date('Y', time())) {
                 // skip
             } else {
                 if ($this->locale === 'bg') {
@@ -213,6 +220,10 @@ class Localization
 
         if ($hasWeekDayShortOption) {
             $result['weekDay'] = __('bearframework-localization-addon.day_' . date('N', $timestamp) . '_short');
+        }
+
+        if ($hasWeekNumber) {
+            $result['weekNumber'] = date('W', $timestamp);
         }
 
         if ($hasTimeOption) {
@@ -374,6 +385,18 @@ class Localization
             'bearframework-localization-addon.month_10',
             'bearframework-localization-addon.month_11',
             'bearframework-localization-addon.month_12',
+            'bearframework-localization-addon.month_1_short',
+            'bearframework-localization-addon.month_2_short',
+            'bearframework-localization-addon.month_3_short',
+            'bearframework-localization-addon.month_4_short',
+            'bearframework-localization-addon.month_5_short',
+            'bearframework-localization-addon.month_6_short',
+            'bearframework-localization-addon.month_7_short',
+            'bearframework-localization-addon.month_8_short',
+            'bearframework-localization-addon.month_9_short',
+            'bearframework-localization-addon.month_10_short',
+            'bearframework-localization-addon.month_11_short',
+            'bearframework-localization-addon.month_12_short',
             'bearframework-localization-addon.day_1',
             'bearframework-localization-addon.day_2',
             'bearframework-localization-addon.day_3',

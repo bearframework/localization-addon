@@ -24,10 +24,13 @@ var f = function (date, options) {
     var hasDateOption = hasOption('date');
     var hasDateAutoYearOption = hasOption('dateAutoYear');
     var hasMonthOption = hasOption('month');
+    var hasMonthShortOption = hasOption('monthShort');
     var hasYearOption = hasOption('year');
+    var hasAutoYearOption = hasOption('autoYear');
     var hasMonthDayOption = hasOption('monthDay');
     var hasWeekDayOption = hasOption('weekDay');
     var hasWeekDayShortOption = hasOption('weekDayShort');
+    var hasWeekNumber = hasOption('weekNumber');
     var hasTimeOption = hasOption('time');
     var hasTimeAgoOption = hasOption('timeAgo');
 
@@ -54,9 +57,13 @@ var f = function (date, options) {
         result.month = __('bearframework-localization-addon.month_' + (dateObject.getMonth() + 1));
     }
 
-    if (hasDateOption || hasYearOption || hasDateAutoYearOption) {
+    if (hasMonthShortOption) {
+        result.month = __('bearframework-localization-addon.month_' + (dateObject.getMonth() + 1) + '_short');
+    }
+
+    if (hasDateOption || hasYearOption || hasDateAutoYearOption || hasAutoYearOption) {
         var year = dateObject.getFullYear();
-        if (hasDateAutoYearOption && year === currentDateObject.getFullYear()) {
+        if ((hasDateAutoYearOption || hasAutoYearOption) && year === currentDateObject.getFullYear()) {
             // skip
         } else {
             if (locale === 'bg') {
@@ -80,6 +87,14 @@ var f = function (date, options) {
             day = 7;
         }
         result.weekDay = __('bearframework-localization-addon.day_' + day + '_short');
+    }
+
+    if (hasWeekNumber) {
+        var tempDate = new Date(dateObject);
+        tempDate.setHours(0, 0, 0, 0);
+        tempDate.setDate(tempDate.getDate() + 3 - (tempDate.getDay() + 6) % 7);
+        var week1 = new Date(tempDate.getFullYear(), 0, 4);
+        result.weekNumber = (1 + Math.round(((tempDate.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7)).toString();
     }
 
     if (hasTimeOption) {
