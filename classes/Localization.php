@@ -270,6 +270,7 @@ class Localization
                 $replacedTemplate .= ',';
             }
             $replacedTemplate .= ' ' . implode(', ', $result);
+            $replacedTemplate = trim($replacedTemplate);
         }
 
         return $replacedTemplate;
