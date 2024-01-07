@@ -147,6 +147,7 @@ var f = function (date, options) {
             replacedTemplate += ',';
         }
         replacedTemplate += ' ' + resultValues.join(', ');
+        replacedTemplate = replacedTemplate.trim();
     }
 
     return replacedTemplate;
