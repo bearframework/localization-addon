@@ -173,6 +173,7 @@ class Localization
         $hasWeekDayShortOption = $hasOption('weekDayShort');
         $hasWeekNumber = $hasOption('weekNumber');
         $hasTimeOption = $hasOption('time');
+        $hasSecondsOption = $hasOption('seconds');
         $hasTimeAgoOption = $hasOption('timeAgo');
 
         if ($hasTimeAgoOption) {
@@ -226,11 +227,11 @@ class Localization
             $result['weekNumber'] = date('W', $timestamp);
         }
 
-        if ($hasTimeOption) {
+        if ($hasTimeOption || $hasSecondsOption) {
             if ($this->locale === 'bg') {
-                $result['time'] = date('G:i', $timestamp) . 'ч.';
+                $result['time'] = date('G:i' . ($hasSecondsOption ? ':s' : ''), $timestamp) . 'ч.';
             } else {
-                $result['time'] = date('G:i', $timestamp);
+                $result['time'] = date('G:i' . ($hasSecondsOption ? ':s' : ''), $timestamp);
             }
         }
 

@@ -32,6 +32,7 @@ var f = function (date, options) {
     var hasWeekDayShortOption = hasOption('weekDayShort');
     var hasWeekNumber = hasOption('weekNumber');
     var hasTimeOption = hasOption('time');
+    var hasSecondsOption = hasOption('seconds');
     var hasTimeAgoOption = hasOption('timeAgo');
 
     if (hasTimeAgoOption) {
@@ -97,11 +98,11 @@ var f = function (date, options) {
         result.weekNumber = (1 + Math.round(((tempDate.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7)).toString();
     }
 
-    if (hasTimeOption) {
+    if (hasTimeOption || hasSecondsOption) {
         if (locale === 'bg') {
-            result.time = dateObject.getHours() + ':' + dateObject.getMinutes().toString().padStart(2, '0') + 'ч.';
+            result.time = dateObject.getHours() + ':' + dateObject.getMinutes().toString().padStart(2, '0') + (hasSecondsOption ? ':' + dateObject.getSeconds().toString().padStart(2, '0') : '') + 'ч.';
         } else {
-            result.time = dateObject.getHours() + ':' + dateObject.getMinutes().toString().padStart(2, '0');
+            result.time = dateObject.getHours() + ':' + dateObject.getMinutes().toString().padStart(2, '0') + (hasSecondsOption ? ':' + dateObject.getSeconds().toString().padStart(2, '0') : '');
         }
     }
 
