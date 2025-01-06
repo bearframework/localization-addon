@@ -255,7 +255,7 @@ class Localization
             preg_match_all('/\{(.*?)\}/', $template, $matches);
             if (is_array($matches) && isset($matches[1])) {
                 $keys = $matches[1];
-                if (sizeof(array_intersect($resultKeys, $keys)) === sizeof($keys)) {
+                if (count(array_intersect($resultKeys, $keys)) === count($keys)) {
                     $replacedTemplate = $template;
                     foreach ($keys as $key) {
                         $replacedTemplate = str_replace('{' . $key . '}', $result[$key], $replacedTemplate);
