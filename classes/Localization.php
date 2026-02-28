@@ -39,7 +39,7 @@ class Localization
      *
      * @var array 
      */
-    private $defaultLocales = ['bg' => 0, 'en' => 0, 'ru' => 0];
+    private $defaultLocales = ['bg' => 0, 'en' => 0, 'ru' => 0, 'ro' => 0];
 
     /**
      * Sets a new locale code.
